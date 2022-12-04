@@ -4,11 +4,6 @@
 #include "soc/rtc_cntl_reg.h"
 #include "Base64.h"
 
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
-
 #include "esp_camera.h"
 
 const char* ssid     = "JioFiber-HprHS";   //your network SSID
@@ -39,13 +34,14 @@ int waitingTime = 30000; //Wait 30 seconds to google response.
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-AsyncWebServer server(80);
-
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   
   Serial.begin(115200);
   delay(10);
+
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
   
   WiFi.mode(WIFI_STA);
 
@@ -62,14 +58,6 @@ void setup() {
   Serial.println("");
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Hi! This is a sample response.");
-  });
-
-  AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
-  server.begin();
-  Serial.println("HTTP server started");
     
   Serial.println("");
 
